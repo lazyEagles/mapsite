@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Cities from The Chosen Country</title>
+    <style>
+      html { height: 100%; }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #wrapper { position: relative; width: 1080px; margin: auto; }
+      #header { background: black; color: white; }
+      #menu { height:24px }
+      a.menu { float:left;height:20px; width:auto; text-decoration:none; color:black; background-color:white; padding:2px 10px; border-right:1px solid white; }
+      a.menu:hover { background-color:black; color:white; border-right:1px solid white; }
+      #result { margin-top: 20px; margin-bottom: 20px;}
+      #footer { background: black; color: white; text-align: center; }
+    </style>
+  </head>
+  <body> 
+    <div id= "wrapper">
+      <div id="header">ADB2013 HW1</div>
+      <div id="menu">
+        <a class="menu" href="{% url 'googlemap-readme' %}" target="_blank">Read me</a>
+        <a class="menu" href="{% url 'googlemap-index' %}" target="_blank">Home</a>
+        <a class="menu" href="{% url 'googlemap-distance' %}" target="_blank">Get Distance</a>
+        <a class="menu" href="{% url 'googlemap-country' %}" target="_blank">Get Cities from The Chosen Country</a>
+        <a class="menu" href="{% url 'googlemap-population' %}" target="_blank">Get Cities by Population</a>
+        <a class="menu" href="{% url 'googlemap-neighbor' %}" target="_blank">Get Nearest n Cities</a>
+      </div>
+      <h1>Get Cities from The Chosen Country</h1>
+<!--
+      <form action="{% url 'googlemap-country' %}" method="post">
+      {% csrf_token %}
+        country1: <input type="text" name="country1" /><br />
+        <input type="submit" value="Submit" />
+      </form>
+-->
+      Target Country: <br /><br />
+      <form action="{% url 'googlemap-country' %}" method="post">
+      {% csrf_token %}
+        <select name="country1" id="countrySelect">
+          <option value="All Countries">All Countries</option>
+          {% for country in countries %}
+          <option value="{{ country }}">{{ country }}</option>
+          {% endfor %}
+        </select>    
+        <input type="submit" value="Search" />
+        <hr />
+      </form>
+  
+      <div id="result">
+      {% if cities %}
+        <p>Cities in The Chosen Country: </p>
+        <table border="1">
+          <tr>
+            <td>City</td>
+            <td>Country</td>
+            <td>Population Class</td>
+            <td>Longitude</td>
+            <td>Latitude</td>
+            <td>Position(log,lat)</td>
+          </tr>
+          {% for city in cities %}
+          <tr>
+            <td>{{ city.cityname }}</td>
+            <td>{{ city.countryname }}</td>
+            <td>{{ city.populationclass}}</td>
+            <td>{{ city.longitude }}</td>
+            <td>{{ city.latitude }}</td>
+            <td>{{ city.geom }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p>Please select "Target Country" and press "Search".</p>
+        {% endif %}
+      </div>
+      <div id="footer">copyleft 2013, lazyEagles</div>
+    </div>
+  </body>
+</html>
+

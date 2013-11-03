@@ -1,0 +1,38 @@
+<html>
+<body>
+<form action="{% url 'googlemap-region' %}" method="post">
+{% csrf_token %}
+minLog: <input type="text" name="minlog" /><br />
+minlat: <input type="text" name="minlat" /><br />
+maxlog: <input type="text" name="maxlog" /><br />
+maxlat: <input type="text" name="maxlat" /><br />
+<input type="submit" value="Submit" />
+</form>
+
+<form action="{% url 'googlemap-distance' %}" method="post">
+{% csrf_token %}
+city1: <input type="text" name="city1" /><br />
+city2: <input type="text" name="city2" /><br />
+<input type="submit" value="Submit" />
+</form>
+
+<form action="{% url 'googlemap-country' %}" method="post">
+{% csrf_token %}
+country1: <input type="text" name="country1" /><br />
+<input type="submit" value="Submit" />
+</form>
+
+<form action="{% url 'googlemap-population' %}" method="post">
+{% csrf_token %}
+population: <input type="text" name="population" /><br />
+<input type="submit" value="Submit" />
+</form>
+
+<form action="{% url 'googlemap-neighbor' %}" method="post">
+{% csrf_token %}
+city1: <input type="text" name="city1" /><br />
+n_neighbor: <input type="text" name="n_neighbor" /><br />
+<input type="submit" value="Submit" />
+</form>
+</body>
+</html>

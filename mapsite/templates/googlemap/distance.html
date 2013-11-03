@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Distance between 2 Cities</title>
+    <style>
+      html { height: 100%; }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #wrapper { position: relative; width: 1080px; margin: auto; }
+      #header { background: black; color: white; }
+      #menu { height:24px }
+      a.menu { float:left;height:20px; width:auto; text-decoration:none; color:black; background-color:white; padding:2px 10px; border-right:1px solid white; }
+      a.menu:hover { background-color:black; color:white; border-right:1px solid white; }
+      #result { background: silver; margin-top: 20px; margin-bottom: 20px; height: 200px; }
+      #footer { background: black; color: white; text-align: center; }
+    </style>
+  </head>
+  <body>
+<!--
+    <form action="{% url 'googlemap-distance' %}" method="post">
+    {% csrf_token %}
+      city1: <input type="text" name="city1" /><br />
+      city2: <input type="text" name="city2" /><br />
+      <input type="submit" value="Submit" />
+    </form>
+-->
+
+    <div id= "wrapper">
+      <div id="header">ADB2013 HW1</div>
+      <div id="menu">
+        <a class="menu" href="{% url 'googlemap-readme' %}" target="_blank">Read me</a>
+        <a class="menu" href="{% url 'googlemap-index' %}" target="_blank">Home</a>
+        <a class="menu" href="{% url 'googlemap-distance' %}" target="_blank">Get Distance</a>
+        <a class="menu" href="{% url 'googlemap-country' %}" target="_blank">Get Cities from The Chosen Country</a>
+        <a class="menu" href="{% url 'googlemap-population' %}" target="_blank">Get Cities by Population</a>
+        <a class="menu" href="{% url 'googlemap-neighbor' %}" target="_blank">Get Nearest n Cities</a>
+      </div>
+      <h1>Get Distance</h1>
+      <form action="{% url 'googlemap-distance' %}" method="post">
+      {% csrf_token %}
+        From: <br />
+        <select name="city1" id="city1Select">
+          {% for city in citynames %}
+          <option value="{{ city }}">{{ city }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <br />
+        To: <br />
+        <select name="city2" id="city2Select">
+          {% for city in citynames %}
+          <option value="{{ city }}">{{ city }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <br />
+        <input type="submit" value="Get Distance" />
+        <br />
+      </form>
+      <div id="result">
+        Distance is:<br />
+        {% if distance %}
+          Distance between 
+          {% for d in distance %}
+            <font color="blue">"{{ d.cityname }}"</font> and 
+            <font color="blue">"{{ d.city2_name }}"</font> is:
+            <font color="blue">"{{ d.distance_cities }}"</font> Meters.
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div id="footer">copyleft 2013, lazyEagles</div>
+    </div>
+  </body>
+</html>
+
+

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cities on the map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 90%;
+        width: 1080px;
+        padding: auto 
+      }
+      #city-list {
+        width: 1080px;
+        padding:
+      }
+      #scope {
+      }
+      #readme {
+        background: silver;
+      }
+      #header {
+        background: #D0F5A9;
+      }
+      #menu {
+        background: #D0F5A9;
+      }
+      .ul1 {
+        width: 100%;
+        list-style-type: none;
+      }
+      .li1 {
+        display: inline;
+      }
+      .a1 {
+        float: left;
+        width: auto;
+        text-decoration: none;
+        color: black;
+        background-color: white;
+        padding:0.2em 0.6em;
+        border-right: 1px solid black;
+      }
+      .a1:hover {
+        background-color: black;
+        color: white;
+        border-right: 1px solid white;
+      }
+      #footer {
+        background: #D0F5A9;
+        text-align: center;
+        font-family:sans-serif;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>
+var rectangle;
+
+$(document).ready(function initialize() {
+    var mapOptions = {
+        center: new google.maps.LatLng(20, 20),
+        zoom: 2,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    var map = new google.maps.Map(document.getElementById('map-canvas'),
+                                    mapOptions);
+
+    {% for city in cities %}
+
+    var myLatlng = new google.maps.LatLng({{ city.latitude }}, {{ city.longitude}} );
+
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        icon:"http://labs.google.com/ridefinder/images/mm_20_red.png",
+        map: map,
+    });
+
+    {% endfor %}
+
+    var drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.MARKER,
+        drawingControl: true,
+        drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [
+                google.maps.drawing.OverlayType.MARKER,
+                google.maps.drawing.OverlayType.CIRCLE,
+                google.maps.drawing.OverlayType.POLYGON,
+                google.maps.drawing.OverlayType.POLYLINE,
+                google.maps.drawing.OverlayType.RECTANGLE
+            ] 
+        },
+        markerOptions: {
+            icon: 'images/beachflag.png'
+        },
+        circleOptions: {
+            fillColor: '#ffff00',
+            fillOpacity: 1,
+            strokeWeight: 5,
+            clickable: false,
+            editable: true,
+            zIndex: 1
+        }
+    });
+    drawingManager.setMap(map);
+
+    google.maps.event.addListener(drawingManager, 'rectanglecomplete', function(newRect) {
+        rectangle = newRect;
+        var rectangleBounds = rectangle.getBounds();
+        var southWest = rectangleBounds.getSouthWest();
+        var northEast = rectangleBounds.getNorthEast();      
+        document.getElementById("scope").elements['minlog'].value = southWest.lng();
+        document.getElementById("scope").elements['minlat'].value = southWest.lat();
+        var maxlog = northEast.lng();
+        if (maxlog < 0) {
+            maxlog = 180
+        }
+        document.getElementById("scope").elements['maxlog'].value = maxlog; 
+        document.getElementById("scope").elements['maxlat'].value = northEast.lat();
+    });
+});
+google.maps.event.addDomListener(window, 'load', initialize);
+
+function removeRectangle() {
+    if(rectangle){
+        rectangle.setMap(null);      
+    }
+}
+    </script>
+  </head>
+  <body>
+    <div id="header"><h1>ADB2013 HW1</h1></div>
+    <div id="menu">
+test
+      <ul class="ul1">
+        <li class="li1"><a class="a1" href="{% url 'googlemap-distance' %}" target="_blank">Get Distance</a></li>
+        <li class="li1"><a class="a1" href="{% url 'googlemap-country' %}" target="_blank">Get Cities from the chosen Country</a></li>
+        <li class="li1"><a class="a1" href="{% url 'googlemap-population' %}" target="_blank">Get Cities by population</a></li>
+        <li class="li1"><a class="a1" href="{% url 'googlemap-neighbor' %}" target="_blank">Get nearest n cities</a></li>
+      </ul>
+test2
+    </div>
+    <div id="map-canvas"></div>
+    <form id="scope" action="{% url 'googlemap-region' %}" method="post" target="_blank">
+    {% csrf_token %}
+        minlog: <input type="text" name="minlog" value=""/> 
+        minlat: <input type="text" name="minlat" value=""/><br /> 
+        maxlog: <input type="text" name="maxlog" value=""/> 
+        maxlat: <input type="text" name="maxlat" value=""/><br /> 
+      <input type="submit" value="Set Qeury Box" />
+      <input type=button onclick="removeRectangle();" value="Remove Qeury Box">
+    </form>
+    <div id="readme">
+      <h2>Read Me:</h2>
+      <ol>
+        <li>The red markers on the map are total cities.</li>
+        <li>If you want to make a query box, please choose "rectangle" from "drawing tools" on the map, draw a rectangle on the map and push "Set Qeury Box".
+        <li>The query result will be present on the new tab.
+      </ol>
+    </div>
+    <div id="city-list">
+    {% if cities %}
+      <h2>Information of Total Cities:</h2>
+      <table border="1">
+        <tr>
+          <td>cityname</td>
+          <td>countryname</td>
+          <td>populationclass</td>
+          <td>longitude</td>
+          <td>latitude</td>
+          <td>point(log,lat)</td>
+        </tr>
+        {% for city in cities %}
+        <tr>
+          <td>{{ city.cityname }}</td>
+          <td>{{ city.countryname }}</td>
+          <td>{{ city.populationclass}}</td>
+          <td>{{ city.longitude }}</td>
+          <td>{{ city.latitude }}</td>
+          <td>{{ city.geom }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No cities are available.</p>
+    {% endif %}
+    </div>
+    <div id="footer">Copyleft 2013, lazyEagles</div>
+  </body>
+</html>

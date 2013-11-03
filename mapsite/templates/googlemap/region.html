@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cities in the query region</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html { height: 100%; }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #map-canvas { height: 500px; }
+      #wrapper { position: relative; width: 1080px; margin: auto; }
+      #header { background: black; color: white; }
+      #menu { height:24px }
+      a.menu { float:left;height:20px; width:auto; text-decoration:none; color:black; background-color:white; padding:2px 10px; border-right:1px solid white; }
+      a.menu:hover { background-color:black; color:white; border-right:1px solid white; }
+      #func-link { height:30px }
+      a.disc { float:left;height:20px; width:auto; text-decoration:none; padding:2px; border:3px solid white; }
+      a.func { float:left;height:20px; width:auto; text-decoration:none; color:white; background-color:black; padding:2px 10px; border:3px solid white; }
+      a.func:hover { background-color:white; color:blue; border-right:1px solid white; }
+      #footer { background: black; color: white; text-align: center; }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=drawing"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>
+$(document).ready(function initialize() {
+    var mapOptions = {
+        center: new google.maps.LatLng(20, 20),
+        zoom: 2,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+    {% for city in cities %}
+
+    var myLatlng = new google.maps.LatLng({{ city.latitude }}, {{ city.longitude}} );
+
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        icon:"http://labs.google.com/ridefinder/images/mm_20_blue.png",
+        map: map,
+    });
+
+    {% endfor %}
+
+    var bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng({{ minlat }}, {{ minlog }}),
+        new google.maps.LatLng({{ maxlat }}, {{ maxlog }})
+    );
+
+    var rectangle = new google.maps.Rectangle({
+        bounds: bounds,
+        editable: false
+    });
+
+    rectangle.setMap(map);
+
+});
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">ADB2013 HW1</div>
+      <div id="menu">
+        <a class="menu" href="{% url 'googlemap-readme' %}" target="_blank">Read me</a>
+        <a class="menu" href="{% url 'googlemap-index' %}" target="_blank">Home</a>
+      </div>
+      <div id="map-canvas"></div>
+      <div id="func-link">
+        <a class="disc">Advanced Search:</a>
+        <a class="func" href="{% url 'googlemap-distance' %}" target="_blank">Get Distance</a>
+        <a class="func" href="{% url 'googlemap-country' %}" target="_blank">Get Cities from The Chosen Country</a>
+        <a class="func" href="{% url 'googlemap-population' %}" target="_blank">Get Cities by Population</a>
+        <a class="func" href="{% url 'googlemap-neighbor' %}" target="_blank">Get Nearest n Cities</a>
+      </div>
+      <div id="city-list">
+        <hr />
+      {% if cities %}
+        <h2>Information of Cities in Query Box:</h2>
+        <table border="1">
+          <tr>
+            <td>cityname</td>
+            <td>countryname</td>
+            <td>populationclass</td>
+            <td>longitude</td>
+            <td>latitude</td>
+            <td>point(log,lat)</td>
+          </tr>
+          {% for city in cities %}
+          <tr>
+            <td>{{ city.cityname }}</td>
+            <td>{{ city.countryname }}</td>
+            <td>{{ city.populationclass}}</td>
+            <td>{{ city.longitude }}</td>
+            <td>{{ city.latitude }}</td>
+            <td>{{ city.geom }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+      <p>No citie is in the query box.</p>
+      {% endif %}
+      </div>
+      <div id="footer">copyleft 2013, lazyEagles</div>
+    </div>
+  </body>
+</html>

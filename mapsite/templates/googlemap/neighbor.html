@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get top n nearest cities</title>
+    <style>
+      html { height: 100%; }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #wrapper { position: relative; width: 1080px; margin: auto; }
+      #header { background: black; color: white; }
+      #menu { height:24px }
+      a.menu { float:left;height:20px; width:auto; text-decoration:none; color:black; background-color:white; padding:2px 10px; border-right:1px solid white; }
+      a.menu:hover { background-color:black; color:white; border-right:1px solid white; }
+      #result { margin-top: 20px; margin-bottom:20px; }
+      #footer { background: black; color: white; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div id= "wrapper">
+      <div id="header">ADB2013 HW1</div>
+      <div id="menu">
+        <a class="menu" href="{% url 'googlemap-readme' %}" target="_blank">Read me</a>
+        <a class="menu" href="{% url 'googlemap-index' %}" target="_blank">Home</a>
+        <a class="menu" href="{% url 'googlemap-distance' %}" target="_blank">Get Distance</a>
+        <a class="menu" href="{% url 'googlemap-country' %}" target="_blank">Get Cities from The Chosen Country</a>
+        <a class="menu" href="{% url 'googlemap-population' %}" target="_blank">Get Cities by Population</a>
+        <a class="menu" href="{% url 'googlemap-neighbor' %}" target="_blank">Get Nearest n Cities</a>
+      </div>
+      <h1>Get Top n Nearest Cities</h1>
+      <form action="{% url 'googlemap-neighbor' %}" method="post">
+      {% csrf_token %}
+<!-- 
+        city1: <input type="text" name="city1" /><br /> 
+-->
+        Target City: <br />
+        <select name="city1" id="citySelect">
+          {% for city in citynames %}
+          <option value="{{ city }}">{{ city }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <br />
+        n: <br/>
+        <input type="text" name="n_neighbor" />
+        <br />
+        <br />
+        <input type="submit" value="Search" />
+        <br />
+        <hr />
+      </form>
+
+      <div id="result">
+      {% if cities %}
+        <p>Nearest Cities: </p>
+        <table border="1">
+          <tr>
+            <td>Target City</td>
+            <td>Neighbor City</td>
+            <td>Neighbor Country</td>
+            <td>Distance (meters)</td>
+          </tr>
+          {% for city in cities %}
+          <tr>
+            <td>{{ city.cityname }}</td>
+            <td>{{ city.neighbor }}</td>
+            <td>{{ city.neighbor_country }}</td>
+            <td>{{ city.distance }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p>Please select "Target City" and enter "n" integer value.</p>
+        {% endif %}
+      </div>
+      <div id="footer">copyleft 2013, lazyEagles</div>
+    </div>
+  </body>
+</html>
+
+
